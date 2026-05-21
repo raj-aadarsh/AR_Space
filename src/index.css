@@ -1,0 +1,99 @@
+@import "tailwindcss";
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: auto; overflow-x: hidden; }
+
+body {
+  background: #080B11;
+  color: #F0F6FC;
+  font-family: 'Space Grotesk', sans-serif;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  body { cursor: none; }
+  a, button { cursor: none; }
+}
+
+::-webkit-scrollbar { width: 2px; }
+::-webkit-scrollbar-track { background: #080B11; }
+::-webkit-scrollbar-thumb { background: #1f2937; }
+::selection { background: rgba(59,130,246,0.25); color: #93C5FD; }
+
+/* ── Navbar roll-text hover ───────────────────────── */
+.nav-roll {
+  display: block;
+  height: 1em;
+  line-height: 1em;
+  overflow: hidden;
+}
+.nav-roll-inner {
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.38s cubic-bezier(0.23, 1, 0.32, 1);
+}
+.nav-btn:hover .nav-roll-inner,
+.nav-btn.active .nav-roll-inner { transform: translateY(-100%); }
+.nav-roll-a, .nav-roll-b { display: block; height: 1em; }
+.nav-roll-b { color: #3B82F6; }
+
+/* ── Logo ─────────────────────────────────────────── */
+.logo-btn {
+  position: relative;
+  background: none;
+  border: none;
+  padding-bottom: 3px;
+  cursor: none;
+}
+.logo-btn::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0;
+  width: 0; height: 2px;
+  background: #3B82F6;
+  transition: width 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+}
+.logo-btn:hover::after { width: 100%; }
+.logo-dot {
+  color: #3B82F6;
+  display: inline-block;
+  transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+}
+.logo-btn:hover .logo-dot { transform: rotate(360deg); }
+
+/* ── Scroll Orb ripple ────────────────────────────── */
+@keyframes orbRipple {
+  0%   { transform: translate(-50%,-50%) scale(0.3); opacity: 0.55; }
+  100% { transform: translate(-50%,-50%) scale(3.5); opacity: 0; }
+}
+.orb-ripple {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 100%; height: 100%;
+  border-radius: 50%;
+  border: 1px solid rgba(59,130,246,0.7);
+  animation: orbRipple 1.6s ease-out infinite;
+  pointer-events: none;
+}
+
+/* ── Resume download bounce ───────────────────────── */
+@keyframes dlBounce {
+  0%, 100% { transform: translateY(0); }
+  40%       { transform: translateY(5px); }
+  70%       { transform: translateY(2px); }
+}
+.dl-arrow { display: inline-block; }
+.resume-btn:hover .dl-arrow { animation: dlBounce 0.7s ease infinite; }
+
+/* ── Responsive ───────────────────────────────────── */
+@media (max-width: 900px) {
+  .about-grid   { grid-template-columns: 1fr !important; }
+  .project-grid { grid-template-columns: 1fr !important; }
+  .github-grid  { grid-template-columns: 1fr 1fr !important; }
+  .skills-row   { grid-template-columns: 1fr !important; }
+  .scroll-orb   { display: none !important; }
+}
+@media (max-width: 600px) {
+  .github-grid  { grid-template-columns: 1fr !important; }
+}
