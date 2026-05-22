@@ -37,7 +37,7 @@ const HEIGHT   = 5.5
 const RADIUS   = 0.7
 const TURNS    = 3.5
 
-function DNAHelix({ assembleProgress, mobile }) {
+function DNAHelix({ assembleProgress, mobile, orbPos }) {
   const pointsRef = useRef()
   const lastP     = useRef(-1)
 
@@ -147,7 +147,7 @@ function DNAHelix({ assembleProgress, mobile }) {
   })
 
   return (
-    <points ref={pointsRef} geometry={geo} position={mobile ? [0, 0.2, 0] : [-2.2, -1.2, 0]}>
+    <points ref={pointsRef} geometry={geo} position={mobile ? [0, 0.2, 0] : orbPos}>
       <pointsMaterial
         size={0.032}
         vertexColors
@@ -161,13 +161,13 @@ function DNAHelix({ assembleProgress, mobile }) {
   )
 }
 
-function Scene({ assembleProgress, mobile }) {
+function Scene({ assembleProgress, mobile, orbPos }) {
   return (
     <>
       <ambientLight intensity={0.05} />
       <pointLight position={[-2, 2, 3]}  intensity={2.8} color="#3B82F6" />
       <pointLight position={[1, -2, 2]}  intensity={1.4} color="#0EA5E9" />
-      <DNAHelix assembleProgress={assembleProgress} mobile={mobile} />
+      <DNAHelix assembleProgress={assembleProgress} mobile={mobile} orbPos={orbPos} />
     </>
   )
 }
@@ -228,8 +228,12 @@ export default function Experience() {
   const headingRef      = useRef(null)
   const assembleProgress = useRef(0)
   const vp       = useViewport()
-  const isMobile = vp === 'mobile'
-  const isTablet = vp === 'tablet'
+  const isMobile    = vp === 'mobile'
+  const isNarrowVp  = vp === 'tablet-portrait' || vp === 'phone-landscape'
+  const orbPos = vp === 'phone-landscape' ? [-1.5, -1.2, 0]
+               : vp === 'tablet-portrait' ? [-1.3, -1.2, 0]
+               : vp === 'tablet-landscape' ? [-2.8, -1.2, 0]
+               : [-2.2, -1.2, 0]
 
   useEffect(() => {
     if (!sectionRef.current) return
@@ -260,7 +264,7 @@ export default function Experience() {
 
   const miniCanvas = (
     <div style={{ width: 'clamp(110px, 32vw, 135px)', height: 'clamp(110px, 32vw, 135px)', flexShrink: 0 }}>
-      <Canvas camera={{ position: [0, 0, 3.8], fov: 55 }} dpr={[1, 1.5]} gl={{ antialias: true, alpha: true }} style={{ width: '100%', height: '100%' }}>
+      <Canvas camera={{ position: [0, 0, 6.0], fov: 55 }} dpr={[1, 1.5]} gl={{ antialias: true, alpha: true }} style={{ width: '100%', height: '100%' }}>
         <Scene assembleProgress={assembleProgress} mobile />
       </Canvas>
     </div>
@@ -276,7 +280,7 @@ export default function Experience() {
       {!isMobile && (
         <Canvas camera={{ position: [0, 0, 6], fov: 50 }} dpr={[1, 1.5]} gl={{ antialias: true, alpha: true }}
           style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 0 }}>
-          <Scene assembleProgress={assembleProgress} />
+          <Scene assembleProgress={assembleProgress} orbPos={orbPos} />
         </Canvas>
       )}
       {!isMobile && (
@@ -298,7 +302,7 @@ export default function Experience() {
           </h2>
           {isMobile && miniCanvas}
         </div>
-        <div style={{ marginLeft: isMobile ? 0 : 'auto', maxWidth: isMobile ? '100%' : isTablet ? '60%' : '680px' }}>
+        <div style={{ marginLeft: isMobile ? 0 : 'auto', maxWidth: isMobile ? '100%' : isNarrowVp ? '60%' : '680px' }}>
           {JOBS.map((job, i) => (
             <JobCard key={job.role} job={job} isLast={i === JOBS.length - 1} />
           ))}

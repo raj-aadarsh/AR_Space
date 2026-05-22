@@ -72,7 +72,7 @@ function fillBox(homePos, idx, cx, cy, cz, wx, wy, wz, rotY, count) {
   return idx
 }
 
-function HandshakeOrb({ assembleProgress, mobile }) {
+function HandshakeOrb({ assembleProgress, mobile, orbPos }) {
   const groupRef  = useRef()
   const pointsRef = useRef()
   const lastP     = useRef(-1)
@@ -174,7 +174,7 @@ function HandshakeOrb({ assembleProgress, mobile }) {
   })
 
   return (
-    <group ref={groupRef} rotation={[0.30, 0, 0]} position={mobile ? [0, 0, 0] : [2.6, -0.3, 0]}>
+    <group ref={groupRef} rotation={[0.30, 0, 0]} position={mobile ? [0, 0, 0] : orbPos}>
       <points ref={pointsRef} geometry={geo}>
         <pointsMaterial
           size={0.030}
@@ -190,13 +190,13 @@ function HandshakeOrb({ assembleProgress, mobile }) {
   )
 }
 
-function Scene({ assembleProgress, mobile }) {
+function Scene({ assembleProgress, mobile, orbPos }) {
   return (
     <>
       <ambientLight intensity={0.04} />
       <pointLight position={[3, 2, 3]}   intensity={2.6} color="#3B82F6" />
       <pointLight position={[-1, -2, 2]} intensity={1.2} color="#0EA5E9" />
-      <HandshakeOrb assembleProgress={assembleProgress} mobile={mobile} />
+      <HandshakeOrb assembleProgress={assembleProgress} mobile={mobile} orbPos={orbPos} />
     </>
   )
 }
@@ -237,8 +237,11 @@ function ContactLink({ item }) {
 
 export default function Connect() {
   const vp       = useViewport()
-  const isMobile = vp === 'mobile'
-  const isTablet = vp === 'tablet'
+  const isMobile   = vp === 'mobile'
+  const isNarrowVp = vp === 'tablet-portrait' || vp === 'phone-landscape'
+  const orbPos = vp === 'phone-landscape'  ? [1.8, -0.3, 0]
+               : vp === 'tablet-landscape' ? [3.2, -0.3, 0]
+               : [2.6, -0.3, 0]
   const sectionRef      = useRef(null)
   const headingRef      = useRef(null)
   const contentRef      = useRef(null)
@@ -280,7 +283,7 @@ export default function Connect() {
 
   const miniCanvas = (
     <div style={{ width: 'clamp(110px, 32vw, 135px)', height: 'clamp(110px, 32vw, 135px)', flexShrink: 0 }}>
-      <Canvas camera={{ position: [0, 0, 5.5], fov: 60 }} dpr={[1, 1.5]} gl={{ antialias: true, alpha: true }} style={{ width: '100%', height: '100%' }}>
+      <Canvas camera={{ position: [0, 0, 6.5], fov: 60 }} dpr={[1, 1.5]} gl={{ antialias: true, alpha: true }} style={{ width: '100%', height: '100%' }}>
         <Scene assembleProgress={assembleProgress} mobile />
       </Canvas>
     </div>
@@ -301,7 +304,7 @@ export default function Connect() {
       {!isMobile && (
         <Canvas camera={{ position: [0, 0, 6], fov: 50 }} dpr={[1, 1.5]} gl={{ antialias: true, alpha: true }}
           style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 0 }}>
-          <Scene assembleProgress={assembleProgress} />
+          <Scene assembleProgress={assembleProgress} orbPos={orbPos} />
         </Canvas>
       )}
       {!isMobile && (
@@ -327,7 +330,7 @@ export default function Connect() {
           {isMobile && miniCanvas}
         </div>
 
-        <div ref={contentRef} style={{ maxWidth: isMobile ? '100%' : isTablet ? '60%' : '560px', visibility: 'hidden' }}>
+        <div ref={contentRef} style={{ maxWidth: isMobile ? '100%' : isNarrowVp ? '60%' : '560px', visibility: 'hidden' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
             {CONTACT_LINKS.map(item => <ContactLink key={item.label} item={item} />)}
           </div>

@@ -17,7 +17,7 @@ const NUC_N    = 160
 const TOTAL    = ORB_N * 3 + NUC_N
 const ORB_R    = 1.6
 
-function AtomOrb({ assembleProgress, mobile }) {
+function AtomOrb({ assembleProgress, mobile, orbPos }) {
   const groupRef  = useRef()
   const pointsRef = useRef()
   const lastP     = useRef(-1)
@@ -115,7 +115,7 @@ function AtomOrb({ assembleProgress, mobile }) {
   })
 
   return (
-    <group ref={groupRef} position={mobile ? [0, 0, 0] : [2.2, -0.4, 0]}>
+    <group ref={groupRef} position={mobile ? [0, 0, 0] : orbPos}>
       <points ref={pointsRef} geometry={geo}>
         <pointsMaterial
           size={0.030}
@@ -131,21 +131,24 @@ function AtomOrb({ assembleProgress, mobile }) {
   )
 }
 
-function Scene({ assembleProgress, mobile }) {
+function Scene({ assembleProgress, mobile, orbPos }) {
   return (
     <>
       <ambientLight intensity={0.04} />
       <pointLight position={[3, 2, 3]}   intensity={2.6} color="#3B82F6" />
       <pointLight position={[-1, -2, 2]} intensity={1.2} color="#0EA5E9" />
-      <AtomOrb assembleProgress={assembleProgress} mobile={mobile} />
+      <AtomOrb assembleProgress={assembleProgress} mobile={mobile} orbPos={orbPos} />
     </>
   )
 }
 
 export default function Education() {
   const vp       = useViewport()
-  const isMobile = vp === 'mobile'
-  const isTablet = vp === 'tablet'
+  const isMobile   = vp === 'mobile'
+  const isNarrowVp = vp === 'tablet-portrait' || vp === 'phone-landscape'
+  const orbPos = vp === 'phone-landscape'  ? [1.6, -0.4, 0]
+               : vp === 'tablet-landscape' ? [2.8, -0.4, 0]
+               : [2.2, -0.4, 0]
   const sectionRef      = useRef(null)
   const headingRef      = useRef(null)
   const cardRef         = useRef(null)
@@ -187,7 +190,7 @@ export default function Education() {
 
   const miniCanvas = (
     <div style={{ width: 'clamp(110px, 32vw, 135px)', height: 'clamp(110px, 32vw, 135px)', flexShrink: 0 }}>
-      <Canvas camera={{ position: [0, 0, 5.0], fov: 55 }} dpr={[1, 1.5]} gl={{ antialias: true, alpha: true }} style={{ width: '100%', height: '100%' }}>
+      <Canvas camera={{ position: [0, 0, 3.5], fov: 55 }} dpr={[1, 1.5]} gl={{ antialias: true, alpha: true }} style={{ width: '100%', height: '100%' }}>
         <Scene assembleProgress={assembleProgress} mobile />
       </Canvas>
     </div>
@@ -208,7 +211,7 @@ export default function Education() {
       {!isMobile && (
         <Canvas camera={{ position: [0, 0, 6], fov: 50 }} dpr={[1, 1.5]} gl={{ antialias: true, alpha: true }}
           style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 0 }}>
-          <Scene assembleProgress={assembleProgress} />
+          <Scene assembleProgress={assembleProgress} orbPos={orbPos} />
         </Canvas>
       )}
       {!isMobile && (
@@ -235,7 +238,7 @@ export default function Education() {
           {isMobile && miniCanvas}
         </div>
 
-        <div ref={cardRef} style={{ maxWidth: isMobile ? '100%' : isTablet ? '60%' : '620px', visibility: 'hidden' }}>
+        <div ref={cardRef} style={{ maxWidth: isMobile ? '100%' : isNarrowVp ? '60%' : '620px', visibility: 'hidden' }}>
 
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', flexWrap: 'wrap', gap: '0.4rem', marginBottom: '0.4rem' }}>
             <span style={{ fontFamily: mono, fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: C.blue }}>

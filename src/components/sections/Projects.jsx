@@ -35,7 +35,7 @@ const TOTAL = 2200
 const MOB_R = 1.15  // major radius
 const MOB_W = 0.46  // half-width of strip
 
-function MobiusStrip({ assembleProgress, mobile }) {
+function MobiusStrip({ assembleProgress, mobile, orbPos }) {
   const pointsRef = useRef()
   const lastP     = useRef(-1)
 
@@ -97,7 +97,7 @@ function MobiusStrip({ assembleProgress, mobile }) {
   })
 
   return (
-    <points ref={pointsRef} geometry={geo} position={mobile ? [0, 0, 0] : [1.7, -0.25, 0]}>
+    <points ref={pointsRef} geometry={geo} position={mobile ? [0, 0, 0] : orbPos}>
       <pointsMaterial
         size={0.026}
         vertexColors
@@ -111,13 +111,13 @@ function MobiusStrip({ assembleProgress, mobile }) {
   )
 }
 
-function Scene({ assembleProgress, mobile }) {
+function Scene({ assembleProgress, mobile, orbPos }) {
   return (
     <>
       <ambientLight intensity={0.04} />
       <pointLight position={[3, 2, 3]}   intensity={2.6} color="#3B82F6" />
       <pointLight position={[-1, -2, 2]} intensity={1.2} color="#0EA5E9" />
-      <MobiusStrip assembleProgress={assembleProgress} mobile={mobile} />
+      <MobiusStrip assembleProgress={assembleProgress} mobile={mobile} orbPos={orbPos} />
     </>
   )
 }
@@ -203,8 +203,11 @@ function ProjectCard({ project, isLast }) {
 
 export default function Projects() {
   const vp       = useViewport()
-  const isMobile = vp === 'mobile'
-  const isTablet = vp === 'tablet'
+  const isMobile   = vp === 'mobile'
+  const isNarrowVp = vp === 'tablet-portrait' || vp === 'phone-landscape'
+  const orbPos = vp === 'phone-landscape'  ? [1.2, -0.25, 0]
+               : vp === 'tablet-landscape' ? [2.2, -0.25, 0]
+               : [1.7, -0.25, 0]
   const sectionRef      = useRef(null)
   const headingRef      = useRef(null)
   const assembleProgress = useRef(0)
@@ -236,7 +239,7 @@ export default function Projects() {
 
   const miniCanvas = (
     <div style={{ width: 'clamp(110px, 32vw, 135px)', height: 'clamp(110px, 32vw, 135px)', flexShrink: 0 }}>
-      <Canvas camera={{ position: [0, 0, 4.0], fov: 55 }} dpr={[1, 1.5]} gl={{ antialias: true, alpha: true }} style={{ width: '100%', height: '100%' }}>
+      <Canvas camera={{ position: [0, 0, 3.5], fov: 55 }} dpr={[1, 1.5]} gl={{ antialias: true, alpha: true }} style={{ width: '100%', height: '100%' }}>
         <Scene assembleProgress={assembleProgress} mobile />
       </Canvas>
     </div>
@@ -257,7 +260,7 @@ export default function Projects() {
       {!isMobile && (
         <Canvas camera={{ position: [0, 0, 6], fov: 50 }} dpr={[1, 1.5]} gl={{ antialias: true, alpha: true }}
           style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 0 }}>
-          <Scene assembleProgress={assembleProgress} />
+          <Scene assembleProgress={assembleProgress} orbPos={orbPos} />
         </Canvas>
       )}
       {!isMobile && (
@@ -284,7 +287,7 @@ export default function Projects() {
           {isMobile && miniCanvas}
         </div>
 
-        <div style={{ maxWidth: isMobile ? '100%' : isTablet ? '60%' : '660px' }}>
+        <div style={{ maxWidth: isMobile ? '100%' : isNarrowVp ? '60%' : '660px' }}>
           {PROJECTS.map((project, i) => (
             <ProjectCard key={project.title} project={project} isLast={i === PROJECTS.length - 1} />
           ))}

@@ -26,7 +26,7 @@ const TECH_LABELS = [
 const N_NODES = TECH_LABELS.length // 24
 
 // ─── Neural network ───────────────────────────────────────
-function NeuralNet({ scrollProgress, mouseRef }) {
+function NeuralNet({ scrollProgress, mouseRef, vp }) {
   const groupRef      = useRef()
   const linesRef      = useRef()
   const lineMatRef    = useRef()
@@ -172,8 +172,11 @@ function NeuralNet({ scrollProgress, mouseRef }) {
     ambientGeo.attributes.position.needsUpdate = true
   })
 
+  const netPos   = vp === 'mobile' ? [0.3, -1.8, 0] : (vp === 'phone-landscape' || vp === 'tablet-landscape') ? [1.8, 0, 0] : [1.4, 0, 0]
+  const netScale = vp === 'mobile' ? 0.62 : 1
+
   return (
-    <group ref={groupRef} position={[1.4, 0, 0]}>
+    <group ref={groupRef} position={netPos} scale={netScale}>
       {/* Ambient blue particle cloud */}
       <points geometry={ambientGeo}>
         <pointsMaterial
@@ -216,14 +219,14 @@ function NeuralNet({ scrollProgress, mouseRef }) {
   )
 }
 
-function Scene({ scrollProgress, mouseRef }) {
+function Scene({ scrollProgress, mouseRef, vp }) {
   return (
     <>
       <color attach="background" args={['#080B11']} />
       <ambientLight intensity={0.12} />
       <pointLight position={[2, 3, 4]}  intensity={3}   color="#3B82F6" />
       <pointLight position={[-3, -2, 2]} intensity={1.5} color="#1E3A8A" />
-      <NeuralNet scrollProgress={scrollProgress} mouseRef={mouseRef} />
+      <NeuralNet scrollProgress={scrollProgress} mouseRef={mouseRef} vp={vp} />
     </>
   )
 }
@@ -279,7 +282,7 @@ export default function Hero() {
         dpr={[1, 1.5]}
         style={{ position: 'absolute', inset: 0, zIndex: 0, pointerEvents: 'none' }}
       >
-        <Scene scrollProgress={scrollProgress} mouseRef={mouseRef} />
+        <Scene scrollProgress={scrollProgress} mouseRef={mouseRef} vp={vp} />
       </Canvas>
 
       <div style={{
@@ -300,8 +303,9 @@ export default function Hero() {
       {/* Text — left column */}
       <div style={{
         position: 'relative', zIndex: 2,
-        height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center',
-        padding: '0 7%',
+        height: '100%', display: 'flex', flexDirection: 'column',
+        justifyContent: isMobile ? 'flex-start' : 'center',
+        padding: isMobile ? '13vh 7% 0' : '0 7%',
       }}>
 
         <p ref={tagRef} style={{
@@ -331,12 +335,11 @@ export default function Hero() {
         */}
         <p ref={roleRef} style={{
           fontFamily: mono,
-          fontSize: isMobile ? 'clamp(0.6rem, 2.8vw, 0.75rem)' : 'clamp(0.55rem, 1.05vw, 0.72rem)',
+          fontSize: isMobile ? 'clamp(0.38rem, 1.65vw, 0.48rem)' : 'clamp(0.55rem, 1.05vw, 0.72rem)',
           letterSpacing: '0.05em',
           textTransform: 'uppercase',
           color: MUTED,
-          whiteSpace: isMobile ? 'normal' : 'nowrap',
-          lineHeight: isMobile ? 1.8 : 'normal',
+          whiteSpace: 'nowrap',
           visibility: 'hidden',
         }}>
           Android Framework&nbsp;&nbsp;·&nbsp;&nbsp;Python Automation&nbsp;&nbsp;·&nbsp;&nbsp;Artificial Intelligence

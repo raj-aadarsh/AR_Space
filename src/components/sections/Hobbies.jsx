@@ -55,7 +55,7 @@ const GLOW_PTS  = 220
 const SPARK_PTS = 220
 const TOTAL = EDGES.length * EDGE_PTS + 12 * VERT_PTS + GLOW_PTS + SPARK_PTS
 
-function IcoOrb({ assembleProgress, mobile }) {
+function IcoOrb({ assembleProgress, mobile, orbPos, orbScale = 1 }) {
   const groupRef  = useRef()
   const pointsRef = useRef()
   const lastP     = useRef(-1)
@@ -159,7 +159,7 @@ function IcoOrb({ assembleProgress, mobile }) {
   })
 
   return (
-    <group ref={groupRef} rotation={[0.3, 0.4, 0]} position={mobile ? [0, 0, 0] : [-2.0, -0.5, 0]}>
+    <group ref={groupRef} rotation={[0.3, 0.4, 0]} position={mobile ? [0, 0, 0] : orbPos} scale={mobile ? 1 : orbScale}>
       <points ref={pointsRef} geometry={geo}>
         <pointsMaterial
           size={0.032}
@@ -175,13 +175,13 @@ function IcoOrb({ assembleProgress, mobile }) {
   )
 }
 
-function Scene({ assembleProgress, mobile }) {
+function Scene({ assembleProgress, mobile, orbPos, orbScale }) {
   return (
     <>
       <ambientLight intensity={0.04} />
       <pointLight position={[-3, 2, 3]}  intensity={2.6} color="#3B82F6" />
       <pointLight position={[1, -2, 2]}  intensity={1.2} color="#0EA5E9" />
-      <IcoOrb assembleProgress={assembleProgress} mobile={mobile} />
+      <IcoOrb assembleProgress={assembleProgress} mobile={mobile} orbPos={orbPos} orbScale={orbScale} />
     </>
   )
 }
@@ -234,8 +234,13 @@ function HobbyGroup({ group, isLast }) {
 
 export default function Hobbies() {
   const vp       = useViewport()
-  const isMobile = vp === 'mobile'
-  const isTablet = vp === 'tablet'
+  const isMobile   = vp === 'mobile'
+  const isNarrowVp = vp === 'tablet-portrait' || vp === 'phone-landscape'
+  const orbPos = vp === 'phone-landscape'  ? [-1.4, -0.5, 0]
+               : vp === 'tablet-portrait'  ? [-2.5, -0.5, 0]
+               : vp === 'tablet-landscape' ? [-2.6, -0.5, 0]
+               : [-2.0, -0.5, 0]
+  const orbScale = vp === 'tablet-portrait' ? 0.82 : 1
   const sectionRef      = useRef(null)
   const headingRef      = useRef(null)
   const assembleProgress = useRef(0)
@@ -267,7 +272,7 @@ export default function Hobbies() {
 
   const miniCanvas = (
     <div style={{ width: 'clamp(110px, 32vw, 135px)', height: 'clamp(110px, 32vw, 135px)', flexShrink: 0 }}>
-      <Canvas camera={{ position: [0, 0, 4.0], fov: 55 }} dpr={[1, 1.5]} gl={{ antialias: true, alpha: true }} style={{ width: '100%', height: '100%' }}>
+      <Canvas camera={{ position: [0, 0, 3.0], fov: 55 }} dpr={[1, 1.5]} gl={{ antialias: true, alpha: true }} style={{ width: '100%', height: '100%' }}>
         <Scene assembleProgress={assembleProgress} mobile />
       </Canvas>
     </div>
@@ -288,7 +293,7 @@ export default function Hobbies() {
       {!isMobile && (
         <Canvas camera={{ position: [0, 0, 6], fov: 50 }} dpr={[1, 1.5]} gl={{ antialias: true, alpha: true }}
           style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 0 }}>
-          <Scene assembleProgress={assembleProgress} />
+          <Scene assembleProgress={assembleProgress} orbPos={orbPos} orbScale={orbScale} />
         </Canvas>
       )}
       {!isMobile && (
@@ -314,7 +319,7 @@ export default function Hobbies() {
           {isMobile && miniCanvas}
         </div>
 
-        <div style={{ marginLeft: isMobile ? 0 : 'auto', maxWidth: isMobile ? '100%' : isTablet ? '60%' : '620px' }}>
+        <div style={{ marginLeft: isMobile ? 0 : 'auto', maxWidth: isMobile ? '100%' : isNarrowVp ? '60%' : '620px' }}>
           {GROUPS.map((group, i) => (
             <HobbyGroup key={group.category} group={group} isLast={i === GROUPS.length - 1} />
           ))}
