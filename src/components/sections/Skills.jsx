@@ -177,7 +177,7 @@ export default function Skills() {
   const vp       = useViewport()
   const isMobile   = vp === 'mobile'
   const isNarrowVp = vp === 'tablet-portrait' || vp === 'phone-landscape'
-  const orbPos = vp === 'phone-landscape'  ? [-1.9, -0.8, 0]
+  const orbPos = vp === 'phone-landscape'  ? [-1.9, -0.3, 0]
                : vp === 'tablet-portrait'  ? [-2.2, -0.5, 0]
                : vp === 'tablet-landscape' ? [-2.8, -0.4, 0]
                : [-2.2, -0.8, 0]

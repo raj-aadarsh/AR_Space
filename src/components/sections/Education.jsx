@@ -17,7 +17,7 @@ const NUC_N    = 160
 const TOTAL    = ORB_N * 3 + NUC_N
 const ORB_R    = 1.6
 
-function AtomOrb({ assembleProgress, mobile, orbPos }) {
+function AtomOrb({ assembleProgress, mobile, orbPos, orbScale = 1 }) {
   const groupRef  = useRef()
   const pointsRef = useRef()
   const lastP     = useRef(-1)
@@ -115,7 +115,7 @@ function AtomOrb({ assembleProgress, mobile, orbPos }) {
   })
 
   return (
-    <group ref={groupRef} position={mobile ? [0, 0, 0] : orbPos}>
+    <group ref={groupRef} position={mobile ? [0, 0, 0] : orbPos} scale={mobile ? 1 : orbScale}>
       <points ref={pointsRef} geometry={geo}>
         <pointsMaterial
           size={0.030}
@@ -131,13 +131,13 @@ function AtomOrb({ assembleProgress, mobile, orbPos }) {
   )
 }
 
-function Scene({ assembleProgress, mobile, orbPos }) {
+function Scene({ assembleProgress, mobile, orbPos, orbScale }) {
   return (
     <>
       <ambientLight intensity={0.04} />
       <pointLight position={[3, 2, 3]}   intensity={2.6} color="#3B82F6" />
       <pointLight position={[-1, -2, 2]} intensity={1.2} color="#0EA5E9" />
-      <AtomOrb assembleProgress={assembleProgress} mobile={mobile} orbPos={orbPos} />
+      <AtomOrb assembleProgress={assembleProgress} mobile={mobile} orbPos={orbPos} orbScale={orbScale} />
     </>
   )
 }
@@ -146,9 +146,10 @@ export default function Education() {
   const vp       = useViewport()
   const isMobile   = vp === 'mobile'
   const isNarrowVp = vp === 'tablet-portrait' || vp === 'phone-landscape'
-  const orbPos = vp === 'phone-landscape'  ? [1.75, -0.4, 0]
-               : vp === 'tablet-landscape' ? [2.8, -0.4, 0]
-               : [2.2, -0.4, 0]
+  const orbPos  = vp === 'phone-landscape'  ? [1.75, -0.4, 0]
+                : vp === 'tablet-landscape' ? [2.8, -0.4, 0]
+                : [2.2, -0.4, 0]
+  const orbScale = vp === 'phone-landscape' ? 0.75 : 1
   const sectionRef      = useRef(null)
   const headingRef      = useRef(null)
   const cardRef         = useRef(null)
@@ -211,7 +212,7 @@ export default function Education() {
       {!isMobile && (
         <Canvas camera={{ position: [0, 0, 6], fov: 50 }} dpr={[1, 1.5]} gl={{ antialias: true, alpha: true }}
           style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 0 }}>
-          <Scene assembleProgress={assembleProgress} orbPos={orbPos} />
+          <Scene assembleProgress={assembleProgress} orbPos={orbPos} orbScale={orbScale} />
         </Canvas>
       )}
       {!isMobile && (
