@@ -283,7 +283,7 @@ export default function Connect() {
 
   const miniCanvas = (
     <div style={{ width: 'clamp(110px, 32vw, 135px)', height: 'clamp(110px, 32vw, 135px)', flexShrink: 0 }}>
-      <Canvas camera={{ position: [0, 0, 5.0], fov: 60 }} dpr={[1, 1.5]} gl={{ antialias: true, alpha: true }} style={{ width: '100%', height: '100%' }}>
+      <Canvas camera={{ position: [0, 0, 3.8], fov: 60 }} dpr={[1, 1.5]} gl={{ antialias: true, alpha: true }} style={{ width: '100%', height: '100%' }}>
         <Scene assembleProgress={assembleProgress} mobile />
       </Canvas>
     </div>

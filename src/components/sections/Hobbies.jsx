@@ -236,7 +236,7 @@ export default function Hobbies() {
   const vp       = useViewport()
   const isMobile   = vp === 'mobile'
   const isNarrowVp = vp === 'tablet-portrait' || vp === 'phone-landscape'
-  const orbPos = vp === 'phone-landscape'  ? [-1.8, -0.5, 0]
+  const orbPos = vp === 'phone-landscape'  ? [-2.2, -0.5, 0]
                : vp === 'tablet-portrait'  ? [-2.5, -0.5, 0]
                : vp === 'tablet-landscape' ? [-2.6, -0.7, 0]
                : [-2.0, -0.5, 0]

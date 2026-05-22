@@ -146,7 +146,7 @@ export default function Education() {
   const vp       = useViewport()
   const isMobile   = vp === 'mobile'
   const isNarrowVp = vp === 'tablet-portrait' || vp === 'phone-landscape'
-  const orbPos = vp === 'phone-landscape'  ? [1.6, -0.4, 0]
+  const orbPos = vp === 'phone-landscape'  ? [1.75, -0.4, 0]
                : vp === 'tablet-landscape' ? [2.8, -0.4, 0]
                : [2.2, -0.4, 0]
   const sectionRef      = useRef(null)
