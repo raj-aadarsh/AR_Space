@@ -1,4 +1,5 @@
 import { useRef, useMemo, useEffect } from 'react'
+import { useViewport } from '../../utils/viewport.js'
 import { Canvas, useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import { gsap } from 'gsap'
@@ -54,7 +55,7 @@ const GLOW_PTS  = 220
 const SPARK_PTS = 220
 const TOTAL = EDGES.length * EDGE_PTS + 12 * VERT_PTS + GLOW_PTS + SPARK_PTS
 
-function IcoOrb({ assembleProgress }) {
+function IcoOrb({ assembleProgress, mobile }) {
   const groupRef  = useRef()
   const pointsRef = useRef()
   const lastP     = useRef(-1)
@@ -158,7 +159,7 @@ function IcoOrb({ assembleProgress }) {
   })
 
   return (
-    <group ref={groupRef} rotation={[0.3, 0.4, 0]} position={[-2.0, -0.5, 0]}>
+    <group ref={groupRef} rotation={[0.3, 0.4, 0]} position={mobile ? [0, 0, 0] : [-2.0, -0.5, 0]}>
       <points ref={pointsRef} geometry={geo}>
         <pointsMaterial
           size={0.032}
@@ -174,13 +175,13 @@ function IcoOrb({ assembleProgress }) {
   )
 }
 
-function Scene({ assembleProgress }) {
+function Scene({ assembleProgress, mobile }) {
   return (
     <>
       <ambientLight intensity={0.04} />
       <pointLight position={[-3, 2, 3]}  intensity={2.6} color="#3B82F6" />
       <pointLight position={[1, -2, 2]}  intensity={1.2} color="#0EA5E9" />
-      <IcoOrb assembleProgress={assembleProgress} />
+      <IcoOrb assembleProgress={assembleProgress} mobile={mobile} />
     </>
   )
 }
@@ -232,6 +233,9 @@ function HobbyGroup({ group, isLast }) {
 }
 
 export default function Hobbies() {
+  const vp       = useViewport()
+  const isMobile = vp === 'mobile'
+  const isTablet = vp === 'tablet'
   const sectionRef      = useRef(null)
   const headingRef      = useRef(null)
   const assembleProgress = useRef(0)
@@ -261,6 +265,14 @@ export default function Hobbies() {
     })
   }, [])
 
+  const miniCanvas = (
+    <div style={{ width: 'clamp(110px, 32vw, 135px)', height: 'clamp(110px, 32vw, 135px)', flexShrink: 0 }}>
+      <Canvas camera={{ position: [0, 0, 4.0], fov: 55 }} dpr={[1, 1.5]} gl={{ antialias: true, alpha: true }} style={{ width: '100%', height: '100%' }}>
+        <Scene assembleProgress={assembleProgress} mobile />
+      </Canvas>
+    </div>
+  )
+
   return (
     <section
       id="hobbies"
@@ -269,50 +281,44 @@ export default function Hobbies() {
         position: 'relative',
         background: C.bg,
         borderTop: `1px solid ${C.border}`,
-        padding: '9rem 0',
+        padding: isMobile ? '3rem 0' : '9rem 0',
         overflow: 'hidden',
       }}
     >
-      <Canvas
-        camera={{ position: [0, 0, 6], fov: 50 }}
-        dpr={[1, 1.5]}
-        gl={{ antialias: true, alpha: true }}
-        style={{
-          position: 'absolute', inset: 0,
-          width: '100%', height: '100%',
-          pointerEvents: 'none', zIndex: 0,
-        }}
-      >
-        <Scene assembleProgress={assembleProgress} />
-      </Canvas>
+      {!isMobile && (
+        <Canvas camera={{ position: [0, 0, 6], fov: 50 }} dpr={[1, 1.5]} gl={{ antialias: true, alpha: true }}
+          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 0 }}>
+          <Scene assembleProgress={assembleProgress} />
+        </Canvas>
+      )}
+      {!isMobile && (
+        <div style={{ position: 'absolute', top: 0, right: 0, bottom: 0, width: '62%', pointerEvents: 'none', zIndex: 1,
+          background: `linear-gradient(to left, ${C.bg} 55%, transparent 100%)` }} />
+      )}
 
-      <div style={{
-        position: 'absolute', top: 0, right: 0, bottom: 0,
-        width: '62%', pointerEvents: 'none', zIndex: 1,
-        background: `linear-gradient(to left, ${C.bg} 55%, transparent 100%)`,
-      }} />
+      <div style={{ position: 'relative', zIndex: 2, maxWidth: '1440px', margin: '0 auto', padding: isMobile ? '0 5%' : '0 4%' }}>
+        <div style={isMobile ? { display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.75rem' } : {}}>
+          <h2
+            ref={headingRef}
+            style={{
+              fontFamily: sans, fontWeight: 700,
+              fontSize: isMobile ? 'clamp(1.4rem, 6.5vw, 2rem)' : 'clamp(2.25rem, 5vw, 4rem)',
+              letterSpacing: '-0.02em', color: C.text,
+              marginBottom: isMobile ? 0 : '3rem',
+              flex: isMobile ? 1 : 'none',
+              visibility: 'hidden',
+            }}
+          >
+            Hobbies &amp; <span style={{ color: C.blue }}>Interests</span>
+          </h2>
+          {isMobile && miniCanvas}
+        </div>
 
-      <div style={{ position: 'relative', zIndex: 2, maxWidth: '1440px', margin: '0 auto', padding: '0 4%' }}>
-
-        <h2
-          ref={headingRef}
-          style={{
-            fontFamily: sans, fontWeight: 700,
-            fontSize: 'clamp(2.25rem, 5vw, 4rem)',
-            letterSpacing: '-0.02em', color: C.text,
-            marginBottom: '3rem',
-            visibility: 'hidden',
-          }}
-        >
-          Hobbies &amp; <span style={{ color: C.blue }}>Interests</span>
-        </h2>
-
-        <div style={{ marginLeft: 'auto', maxWidth: '620px' }}>
+        <div style={{ marginLeft: isMobile ? 0 : 'auto', maxWidth: isMobile ? '100%' : isTablet ? '60%' : '620px' }}>
           {GROUPS.map((group, i) => (
             <HobbyGroup key={group.category} group={group} isLast={i === GROUPS.length - 1} />
           ))}
         </div>
-
       </div>
     </section>
   )

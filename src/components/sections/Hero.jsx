@@ -4,6 +4,7 @@ import { Text, Billboard } from '@react-three/drei'
 import * as THREE from 'three'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { useViewport } from '../../utils/viewport.js'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -234,6 +235,8 @@ export default function Hero() {
   const roleRef        = useRef(null)
   const scrollProgress = useRef(0)
   const mouseRef       = useRef({ x: 0, y: 0 })
+  const vp       = useViewport()
+  const isMobile = vp === 'mobile'
 
   useEffect(() => {
     const onMove = (e) => {
@@ -328,11 +331,12 @@ export default function Hero() {
         */}
         <p ref={roleRef} style={{
           fontFamily: mono,
-          fontSize: 'clamp(0.55rem, 1.05vw, 0.72rem)',
+          fontSize: isMobile ? 'clamp(0.6rem, 2.8vw, 0.75rem)' : 'clamp(0.55rem, 1.05vw, 0.72rem)',
           letterSpacing: '0.05em',
           textTransform: 'uppercase',
           color: MUTED,
-          whiteSpace: 'nowrap',
+          whiteSpace: isMobile ? 'normal' : 'nowrap',
+          lineHeight: isMobile ? 1.8 : 'normal',
           visibility: 'hidden',
         }}>
           Android Framework&nbsp;&nbsp;·&nbsp;&nbsp;Python Automation&nbsp;&nbsp;·&nbsp;&nbsp;Artificial Intelligence

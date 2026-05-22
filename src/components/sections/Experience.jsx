@@ -1,4 +1,5 @@
 import { useRef, useMemo, useEffect } from 'react'
+import { useViewport } from '../../utils/viewport.js'
 import { Canvas, useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import { gsap } from 'gsap'
@@ -36,7 +37,7 @@ const HEIGHT   = 5.5
 const RADIUS   = 0.7
 const TURNS    = 3.5
 
-function DNAHelix({ assembleProgress }) {
+function DNAHelix({ assembleProgress, mobile }) {
   const pointsRef = useRef()
   const lastP     = useRef(-1)
 
@@ -146,7 +147,7 @@ function DNAHelix({ assembleProgress }) {
   })
 
   return (
-    <points ref={pointsRef} geometry={geo} position={[-2.2, -1.2, 0]}>
+    <points ref={pointsRef} geometry={geo} position={mobile ? [0, 0.2, 0] : [-2.2, -1.2, 0]}>
       <pointsMaterial
         size={0.032}
         vertexColors
@@ -160,13 +161,13 @@ function DNAHelix({ assembleProgress }) {
   )
 }
 
-function Scene({ assembleProgress }) {
+function Scene({ assembleProgress, mobile }) {
   return (
     <>
       <ambientLight intensity={0.05} />
       <pointLight position={[-2, 2, 3]}  intensity={2.8} color="#3B82F6" />
       <pointLight position={[1, -2, 2]}  intensity={1.4} color="#0EA5E9" />
-      <DNAHelix assembleProgress={assembleProgress} />
+      <DNAHelix assembleProgress={assembleProgress} mobile={mobile} />
     </>
   )
 }
@@ -226,6 +227,9 @@ export default function Experience() {
   const sectionRef      = useRef(null)
   const headingRef      = useRef(null)
   const assembleProgress = useRef(0)
+  const vp       = useViewport()
+  const isMobile = vp === 'mobile'
+  const isTablet = vp === 'tablet'
 
   useEffect(() => {
     if (!sectionRef.current) return
@@ -254,63 +258,51 @@ export default function Experience() {
     })
   }, [])
 
-  return (
-    <section
-      id="experience"
-      ref={sectionRef}
-      style={{
-        position: 'relative',
-        background: C.bg,
-        borderTop: `1px solid ${C.border}`,
-        padding: '9rem 0',
-        overflow: 'hidden',
-      }}
-    >
-      {/* Full-section transparent canvas — particles float on page background */}
-      <Canvas
-        camera={{ position: [0, 0, 6], fov: 50 }}
-        dpr={[1, 1.5]}
-        gl={{ antialias: true, alpha: true }}
-        style={{
-          position: 'absolute', inset: 0,
-          width: '100%', height: '100%',
-          pointerEvents: 'none', zIndex: 0,
-        }}
-      >
-        <Scene assembleProgress={assembleProgress} />
+  const miniCanvas = (
+    <div style={{ width: 'clamp(110px, 32vw, 135px)', height: 'clamp(110px, 32vw, 135px)', flexShrink: 0 }}>
+      <Canvas camera={{ position: [0, 0, 3.8], fov: 55 }} dpr={[1, 1.5]} gl={{ antialias: true, alpha: true }} style={{ width: '100%', height: '100%' }}>
+        <Scene assembleProgress={assembleProgress} mobile />
       </Canvas>
+    </div>
+  )
 
-      {/* Right-side gradient so text stays readable over particles */}
-      <div style={{
-        position: 'absolute', top: 0, right: 0, bottom: 0,
-        width: '62%', pointerEvents: 'none', zIndex: 1,
-        background: `linear-gradient(to left, ${C.bg} 55%, transparent 100%)`,
-      }} />
+  return (
+    <section id="experience" ref={sectionRef} style={{
+      position: 'relative', background: C.bg,
+      borderTop: `1px solid ${C.border}`,
+      padding: isMobile ? '3rem 0' : '9rem 0',
+      overflow: 'hidden',
+    }}>
+      {!isMobile && (
+        <Canvas camera={{ position: [0, 0, 6], fov: 50 }} dpr={[1, 1.5]} gl={{ antialias: true, alpha: true }}
+          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 0 }}>
+          <Scene assembleProgress={assembleProgress} />
+        </Canvas>
+      )}
+      {!isMobile && (
+        <div style={{ position: 'absolute', top: 0, right: 0, bottom: 0, width: '62%', pointerEvents: 'none', zIndex: 1,
+          background: `linear-gradient(to left, ${C.bg} 55%, transparent 100%)` }} />
+      )}
 
-      {/* Content */}
-      <div style={{ position: 'relative', zIndex: 2, maxWidth: '1440px', margin: '0 auto', padding: '0 4%' }}>
-
-        <h2
-          ref={headingRef}
-          style={{
+      <div style={{ position: 'relative', zIndex: 2, maxWidth: '1440px', margin: '0 auto', padding: isMobile ? '0 5%' : '0 4%' }}>
+        <div style={isMobile ? { display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.75rem' } : {}}>
+          <h2 ref={headingRef} style={{
             fontFamily: sans, fontWeight: 700,
-            fontSize: 'clamp(2.25rem, 5vw, 4rem)',
-            letterSpacing: '-0.02em',
-            color: C.text,
-            marginBottom: '4rem',
+            fontSize: isMobile ? 'clamp(1.4rem, 6.5vw, 2rem)' : 'clamp(2.25rem, 5vw, 4rem)',
+            letterSpacing: '-0.02em', color: C.text,
+            marginBottom: isMobile ? 0 : '4rem',
+            flex: isMobile ? 1 : 'none',
             visibility: 'hidden',
-          }}
-        >
-          The <span style={{ color: C.blue }}>Work</span>
-        </h2>
-
-        {/* Right-aligned content column */}
-        <div style={{ marginLeft: 'auto', maxWidth: '680px' }}>
+          }}>
+            The <span style={{ color: C.blue }}>Work</span>
+          </h2>
+          {isMobile && miniCanvas}
+        </div>
+        <div style={{ marginLeft: isMobile ? 0 : 'auto', maxWidth: isMobile ? '100%' : isTablet ? '60%' : '680px' }}>
           {JOBS.map((job, i) => (
             <JobCard key={job.role} job={job} isLast={i === JOBS.length - 1} />
           ))}
         </div>
-
       </div>
     </section>
   )
