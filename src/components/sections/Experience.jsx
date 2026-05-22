@@ -230,9 +230,9 @@ export default function Experience() {
   const vp       = useViewport()
   const isMobile    = vp === 'mobile'
   const isNarrowVp  = vp === 'tablet-portrait' || vp === 'phone-landscape'
-  const orbPos = vp === 'phone-landscape' ? [-1.5, -1.2, 0]
-               : vp === 'tablet-portrait' ? [-1.3, -1.2, 0]
-               : vp === 'tablet-landscape' ? [-2.8, -1.2, 0]
+  const orbPos = vp === 'phone-landscape'  ? [-1.5, -1.2, 0]
+               : vp === 'tablet-portrait'  ? [-1.3, -1.2, 0]
+               : vp === 'tablet-landscape' ? [-2.2, -1.2, 0]
                : [-2.2, -1.2, 0]
 
   useEffect(() => {

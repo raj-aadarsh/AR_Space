@@ -172,7 +172,7 @@ function NeuralNet({ scrollProgress, mouseRef, vp }) {
     ambientGeo.attributes.position.needsUpdate = true
   })
 
-  const netPos   = vp === 'mobile' ? [0.3, -1.8, 0] : (vp === 'phone-landscape' || vp === 'tablet-landscape') ? [1.8, 0, 0] : [1.4, 0, 0]
+  const netPos   = vp === 'mobile' ? [-0.5, -1.1, 0] : (vp === 'phone-landscape' || vp === 'tablet-landscape') ? [1.8, 0, 0] : [1.4, 0, 0]
   const netScale = vp === 'mobile' ? 0.62 : 1
 
   return (
