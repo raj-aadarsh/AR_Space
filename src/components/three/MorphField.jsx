@@ -115,7 +115,8 @@ const SHAPE_FILLS = [fillHelix, fillKnot, fillGalaxy, fillAtom, fillIco, fillTor
 // Each form belongs to a section; object glides opposite that section's
 // text (zigzag down the page). Index order matches SECTION_IDS.
 const SECTION_IDS = ['experience', 'projects', 'skills', 'education', 'hobbies', 'connect']
-const OFFSETS = [-2.2, 2.0, -2.2, 2.2, -2.2, 2.6]
+// The Work (index 0) sits centred; the rest zigzag opposite their text.
+const OFFSETS = [0, 2.0, -2.2, 2.2, -2.2, 2.6]
 
 function lerp(a, b, t) { return a + (b - a) * t }
 
