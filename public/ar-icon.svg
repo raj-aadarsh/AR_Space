@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="AR">
+  <defs>
+    <linearGradient id="ring" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#3B82F6"/>
+      <stop offset="1" stop-color="#0EA5E9"/>
+    </linearGradient>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0D1117"/>
+      <stop offset="1" stop-color="#080B11"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Tile -->
+  <rect x="3" y="3" width="58" height="58" rx="15" fill="url(#bg)" stroke="url(#ring)" stroke-width="2.5"/>
+
+  <!-- AR wordmark — white A, blue R (matches the navbar logo) -->
+  <text x="32" y="40" text-anchor="middle"
+        font-family="'Space Grotesk','Segoe UI',Arial,sans-serif"
+        font-weight="700" font-size="30" letter-spacing="0.5">
+    <tspan fill="#F0F6FC">A</tspan><tspan fill="#3B82F6">R</tspan>
+  </text>
+
+  <!-- Underscore accent — nods to AR_Space / code theme -->
+  <rect x="23" y="45.5" width="18" height="3" rx="1.5" fill="#3B82F6"/>
+</svg>

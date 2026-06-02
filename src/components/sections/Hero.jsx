@@ -273,7 +273,7 @@ export default function Hero() {
 
   return (
     <section ref={sectionRef} style={{
-      position: 'relative', width: '100%', height: '100vh',
+      position: 'relative', zIndex: 1, width: '100%', height: '100vh',
       minHeight: '600px', overflow: 'hidden', background: BG,
     }}>
 

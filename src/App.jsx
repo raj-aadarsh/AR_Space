@@ -1,6 +1,7 @@
 import Cursor from './components/ui/Cursor'
 import Navbar from './components/ui/Navbar'
 import Footer from './components/ui/Footer'
+import MorphField from './components/three/MorphField'
 import Hero from './components/sections/Hero'
 import Experience from './components/sections/Experience'
 import Projects from './components/sections/Projects'
@@ -14,6 +15,10 @@ export default function App() {
     <>
       <Cursor />
       <Navbar />
+
+      {/* One living object behind the whole content journey */}
+      <MorphField />
+
       <main>
         <Hero />
         <Experience />

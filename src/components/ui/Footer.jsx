@@ -3,6 +3,7 @@ import { sans, mono, C } from '../../utils/theme.jsx'
 export default function Footer() {
   return (
     <footer style={{
+      position: 'relative', zIndex: 1,
       padding: '2.5rem 0',
       background: C.bg,
       borderTop: `1px solid ${C.border}`,
