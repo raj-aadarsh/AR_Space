@@ -115,8 +115,9 @@ const SHAPE_FILLS = [fillHelix, fillKnot, fillGalaxy, fillAtom, fillIco, fillTor
 // Each form belongs to a section; object glides opposite that section's
 // text (zigzag down the page). Index order matches SECTION_IDS.
 const SECTION_IDS = ['experience', 'projects', 'skills', 'education', 'hobbies', 'connect']
-// The Work (index 0) sits centred; the rest zigzag opposite their text.
-const OFFSETS = [0, 2.0, -2.2, 2.2, -2.2, 2.6]
+// Object glides opposite each section's text. The Work (index 0) sits
+// centred within the empty LEFT area, not the page centre.
+const OFFSETS = [-2.5, 2.0, -2.2, 2.2, -2.2, 2.6]
 
 function lerp(a, b, t) { return a + (b - a) * t }
 
@@ -146,9 +147,10 @@ function Field({ opacity, scaleMul, offsetMul }) {
       wave[i]  = i / N
     }
     // Dispersed cloud the first form assembles FROM as the page is entered.
+    // Kept compact so it stays in the left area and never spills over the text.
     const cloud = new Float32Array(N*3)
     for (let i = 0; i < N; i++) {
-      const r = 2.4 + rand() * 1.8
+      const r = 1.0 + rand() * 1.3
       const phi = Math.acos(2*rand()-1), th = rand()*Math.PI*2
       cloud[i*3]   = r * Math.sin(phi) * Math.cos(th)
       cloud[i*3+1] = r * Math.cos(phi)
